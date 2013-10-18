@@ -1,0 +1,8 @@
+CFLAGS=-Wall -g -lm -lcrypt
+
+all: dictbrute
+
+dictbrute: bstrlib.o
+
+clean:
+	rm -f dictbrute
