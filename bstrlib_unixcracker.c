@@ -1,6 +1,7 @@
 #include <crypt.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "bstrlib.h"
 #define _XOPEN_SOURCE
 #include <unistd.h>
@@ -29,6 +30,7 @@ int main(int argc, char *argv[])
 		error("Couldn't open \'%s\'.\n", argv[1]);
 		
 	while(fgets(word, 30, dictionary) != NULL ) { // get each word
+		word[strlen(word) - 1] = '\0';
 		hash = crypt(word, (const char *) salt->data); // hash each word with the salt
 		bstring bhash = bfromcstr(hash);
 		//printf("Trying ==> %s\n", bhash->data); // print the hashed word
