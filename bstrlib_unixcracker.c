@@ -16,15 +16,13 @@ int main(int argc, char *argv[])
 	FILE *dictionary = NULL;
 	char *hash;
 	bstring word = NULL;
-	bstring salt = NULL;
+	bstring salt = blk2bstr(argv[2], 2); // set salt to be the first 2 characters of the hashed password
 	bstring password = bfromcstr(argv[2]);
 	
 	if(argc < 2)
 		error("Usage: %s <dictionary file> <password hash>\n", argv[0]);
-		
-	salt = bassignmidstr(salt, password, 0, 2); // set salt to be the first 2 characters of the hashed password
 	
-	printf("%s\n", salt->data); // print it to confirm
+	printf("%s\n", salt->data); // print salt to confirm it worked
 	
 	if((dictionary = fopen(argv[1], "r")) == NULL ) // open dictionary file
 		error("Couldn't open \'%s\'.\n", argv[1]);
