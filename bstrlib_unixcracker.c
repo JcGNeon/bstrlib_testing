@@ -13,38 +13,43 @@ void error(char *message, char *extra)
 
 int main(int argc, char *argv[])
 {
-	FILE *dictionary = NULL;
+	FILE *dictionary;
 	char *hash;
-	bstring word = NULL;
-	bstring salt = blk2bstr(argv[2], 2); // set salt to be the first 2 characters of the hashed password
+	char word[30];
+	bstring bhash = NULL;
+	bstring salt = blk2bstr(argv[2], 2); // salt is first 2 characters
 	bstring password = bfromcstr(argv[2]);
 	
 	if(argc < 2)
 		error("Usage: %s <dictionary file> <password hash>\n", argv[0]);
-	
-	printf("%s\n", salt->data); // print salt to confirm it worked
+
+	printf("%s\n", salt->data); // print salt to confirm
 	
 	if((dictionary = fopen(argv[1], "r")) == NULL ) // open dictionary file
 		error("Couldn't open \'%s\'.\n", argv[1]);
 		
-	while((word = bgets((bNgetc) fgetc, dictionary, '\n')) != NULL ) { // get each word
-		hash = crypt((const char *) word, (const char *) salt); // hash each word with the salt
-		printf((char *) hash); // print the hashed word
-		
-		if(bstricmp((const_bstring) hash, password) == 0) { // compare the hashed word to the hashed password
+	while(fgets(word, 30, dictionary) != NULL ) { // get each word
+		hash = crypt(word, (const char *) salt->data); // hash each word with the salt
+		bstring bhash = bfromcstr(hash);
+		//printf("Trying ==> %s\n", bhash->data); // print the hashed word
+				
+		if(bstrcmp(bhash, password) == 0) { // compare the hashed word to the hashed password
 			printf("Password found:");
-			printf((char *) word->data);
+			printf("%s\n", word);
 			fclose(dictionary);
-			bdestroy((bstring) word);
-			bdestroy((bstring) salt);
+			bdestroy(bhash); // free up allocated memory
+			bdestroy(salt);
 			bdestroy(password);
 			exit(0);
+		} else {
+			bdestroy(bhash);
 		}
+	
 	}
 	printf("Password not in dictionary.\n");
 	fclose(dictionary);
-	bdestroy((bstring) word);
-	bdestroy((bstring) salt);
+	bdestroy(bhash);
+	bdestroy(salt);
 	bdestroy(password);
 	
 	return 0;
