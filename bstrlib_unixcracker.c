@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 			bdestroy(salt);
 			bdestroy(password);
 			exit(0);
-		} else {
+		} else { // fixed a memory leak with the bhash in the while-loop
 			bdestroy(bhash);
 		}
 	
