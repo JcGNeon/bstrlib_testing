@@ -5,7 +5,7 @@
 #define _XOPEN_SOURCE
 #include <unistd.h>
 
-void error(char *message, char *extra)
+void error(char *message, char *extra) // not sure if needed
 {
 	printf(message, extra);
 	exit(1);
