@@ -35,8 +35,7 @@ int main(int argc, char *argv[])
 		//printf("Trying ==> %s\n", bhash->data); // print the hashed word
 				
 		if(bstrcmp(bhash, password) == 0) { // compare the hashed word to the hashed password
-			printf("Password found:");
-			printf("%s", word);
+			printf("Password found: %s", word);
 			fclose(dictionary);
 			bdestroy(bword);
 			bdestroy(bhash); // free up allocated memory
