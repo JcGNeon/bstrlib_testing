@@ -1,7 +1,6 @@
 #include <crypt.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "bstrlib.h"
 #define _XOPEN_SOURCE
 #include <unistd.h>
@@ -17,7 +16,6 @@ int main(int argc, char *argv[])
 	FILE *dictionary;
 	char *hash;
 	char word[30];
-	bstring bhash = NULL;
 	bstring salt = blk2bstr(argv[2], 2); // salt is first 2 characters
 	bstring password = bfromcstr(argv[2]);
 	
@@ -30,8 +28,9 @@ int main(int argc, char *argv[])
 		error("Couldn't open \'%s\'.\n", argv[1]);
 		
 	while(fgets(word, 30, dictionary) != NULL ) { // get each word
-		word[strlen(word) - 1] = '\0';
-		hash = crypt(word, (const char *) salt->data); // hash each word with the salt
+		bstring bword = bfromcstr(word);
+		bassignmidstr(bword, bword, 0, blength(bword) - 1); // cut off the \n from bword
+		hash = crypt((const char *) word->data, (const char *) salt->data); // hash each word with the salt
 		bstring bhash = bfromcstr(hash);
 		//printf("Trying ==> %s\n", bhash->data); // print the hashed word
 				
@@ -39,18 +38,19 @@ int main(int argc, char *argv[])
 			printf("Password found:");
 			printf("%s\n", word);
 			fclose(dictionary);
+			bdestroy(bword);
 			bdestroy(bhash); // free up allocated memory
 			bdestroy(salt);
 			bdestroy(password);
 			exit(0);
 		} else { // fixed a memory leak with the bhash in the while-loop
+			bdestroy(bword);
 			bdestroy(bhash);
 		}
 	
 	}
 	printf("Password not in dictionary.\n");
 	fclose(dictionary);
-	bdestroy(bhash);
 	bdestroy(salt);
 	bdestroy(password);
 	
